@@ -72,20 +72,6 @@ const useDragging = () => {
   };
 };
 
-const DragList = props => {
-  const { onMouseDown, dragging } = useDragging();
-
-  const { children } = props;
-  return (
-    <div
-      style={{ background: dragging ? "blue" : "none" }}
-      onMouseDown={onMouseDown}
-    >
-      {children}
-    </div>
-  );
-};
-
 const withDragProps = (options = {}) => {
   if (options.grip) {
     return { "data-draggrip": true };
@@ -94,74 +80,86 @@ const withDragProps = (options = {}) => {
   return { "data-draggable": true };
 };
 
+const items = ["Item 1", "Item 2", "Item 3", "Item 4"];
+const DragList = props => {
+  const { onMouseDown, dragging } = useDragging();
+
+  return (
+    <div
+      style={{ background: dragging ? "blue" : "none" }}
+      onMouseDown={onMouseDown}
+    >
+      <Nav
+        selectedKey="key3"
+        selectedAriaLabel="Selected"
+        ariaLabel="Nav basic example"
+        onRenderLink={p => (
+          <div className={p.className}>
+            <Icon
+              {...withDragProps({ grip: true })}
+              className="DragGrip"
+              iconName="gripperdotsvertical"
+            />
+            {p.name}
+          </div>
+        )}
+        styles={{
+          root: {
+            width: 208,
+            height: 350,
+            boxSizing: "border-box",
+            border: "1px solid #eee",
+            overflowY: "auto"
+          }
+        }}
+        groups={[
+          {
+            links: [
+              {
+                ...withDragProps(),
+                name: "Documents",
+                url: "http://example.com",
+                key: "key3",
+                isExpanded: true,
+                target: "_blank"
+              },
+              {
+                name: "Pages",
+                url: "http://msn.com",
+                key: "key4",
+                target: "_blank"
+              },
+              {
+                name: "Notebook",
+                url: "http://msn.com",
+                key: "key5",
+                disabled: true
+              },
+              {
+                name: "Communication and Media",
+                url: "http://msn.com",
+                key: "key6",
+                target: "_blank"
+              },
+              {
+                name: "News",
+                url: "http://cnn.com",
+                icon: "News",
+                key: "key7",
+                target: "_blank"
+              }
+            ]
+          }
+        ]}
+      />
+    </div>
+  );
+};
+
 function App() {
   return (
     <div className="App">
-      <DragList>
-        <Nav
-          selectedKey="key3"
-          selectedAriaLabel="Selected"
-          ariaLabel="Nav basic example"
-          onRenderLink={p => (
-            <div className={p.className}>
-              <Icon
-                {...withDragProps({ grip: true })}
-                className="DragGrip"
-                iconName="gripperdotsvertical"
-              />
-              {p.name}
-            </div>
-          )}
-          styles={{
-            root: {
-              width: 208,
-              height: 350,
-              boxSizing: "border-box",
-              border: "1px solid #eee",
-              overflowY: "auto"
-            }
-          }}
-          groups={[
-            {
-              links: [
-                {
-                  ...withDragProps(),
-                  name: "Documents",
-                  url: "http://example.com",
-                  key: "key3",
-                  isExpanded: true,
-                  target: "_blank"
-                },
-                {
-                  name: "Pages",
-                  url: "http://msn.com",
-                  key: "key4",
-                  target: "_blank"
-                },
-                {
-                  name: "Notebook",
-                  url: "http://msn.com",
-                  key: "key5",
-                  disabled: true
-                },
-                {
-                  name: "Communication and Media",
-                  url: "http://msn.com",
-                  key: "key6",
-                  target: "_blank"
-                },
-                {
-                  name: "News",
-                  url: "http://cnn.com",
-                  icon: "News",
-                  key: "key7",
-                  target: "_blank"
-                }
-              ]
-            }
-          ]}
-        />
-      </DragList>
+      <DragList items={items} />
     </div>
   );
 }
