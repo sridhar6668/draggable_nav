@@ -5,7 +5,6 @@ import {
   findElementRecursive,
   initializeIcons,
   Nav,
-  NavLink,
   Icon
 } from "office-ui-fabric-react";
 import "./styles.css";
@@ -59,44 +58,61 @@ const useDragging = () => {
       );
     }
   };
-
+  /*
   useNativeEvent(
-    "mouseup",
+    "dragend",
     dragging &&
       (ev => {
+        console.log("native dragend");
         setDragging(false);
         setDragElement(undefined);
         ev.preventDefault();
       })
   );
 
+  useNativeEvent(
+    "drop",
+    dragging &&
+      (ev => {
+        console.log("native drop");
+        ev.target.appendChild(dragElement);
+        ev.preventDefault();
+      })
+  );
+*/
   function onDragOver(ev) {
     //console.log("on Drag Over");
     ev.preventDefault();
     ev.dataTransfer.dropEffect = "move";
   }
+
+  let onDragEnd = ev => {
+    if (dragging) {
+      console.log("dragend");
+      //setDragging(false);
+      //setDragElement(undefined);
+      ev.preventDefault();
+    }
+  };
   const onDrop = ev => {
-    console.log("on Drop ");
-    ev.preventDefault();
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-    /*
-    // Get the id of the target and add the moved element to the target's DOM
-    var data = ev.dataTransfer.getData("text/plain");
-    ev.target.appendChild(document.getElementById(data));
-  */
+    console.log("drop");
+    if (dragging) {
+      ev.target.appendChild(dragElement);
+      setDragging(false);
+      setDragElement(undefined);
+      ev.preventDefault();
+    }
   };
   const onDragStart = ev => {
     console.log("on Drag start ");
     ev.dataTransfer.setData("text", ev.target.id);
   };
 
-  
   return {
     onMouseDown,
-    onDragOver,
     onDragStart,
+    onDragEnd,
+    onDragOver,
     onDrop,
     dragging
   };
@@ -110,40 +126,35 @@ const withDragProps = (options = {}) => {
   return { "data-draggable": true };
 };
 
-const items = ["Item1", "Item2", "Item3", "Item4"];
 const addItem = props => {
   return {
     name: props.name,
     disabled: !props.name,
     key: props.key,
-    sridhar: {
-      isAwesome: true
+    asdf: {
+      isEnabled: true
     }
   };
 };
 
-
-
 const DragList = props => {
   const {
     onMouseDown,
-    onDragOver,
     onDragStart,
+    onDragEnd,
+    onDragOver,
     onDrop,
     dragging
   } = useDragging();
-  const { items } = props;
 
   let newItems = [];
-  if (items.length > 0) {
-    let i = 0;
-    for (; i < items.length; i++) {
-      newItems.push(addItem({ name: undefined, key: i }));
-      newItems.push(addItem({ name: items[i], key: items[i] }));
-    }
-
+  let i = 1;
+  for (; i < 5; i++) {
     newItems.push(addItem({ name: undefined, key: i }));
+    newItems.push(addItem({ name: "Item" + i, key: "Item" + i }));
   }
+
+  newItems.push(addItem({ name: undefined, key: i }));
   return (
     <div>
       <Nav
@@ -170,6 +181,7 @@ const DragList = props => {
                   {...withDragProps({ grip: true })}
                   draggable="true"
                   onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
                   onMouseDown={onMouseDown}
                   className="DragGrip"
                   iconName="gripperdotsvertical"
@@ -201,7 +213,7 @@ const DragList = props => {
 function App() {
   return (
     <div className="App">
-      <DragList items={items} />
+      <DragList />
     </div>
   );
 }
