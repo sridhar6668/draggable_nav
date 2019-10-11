@@ -1,85 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { initializeIcons, Nav, Icon } from "office-ui-fabric-react";
+import {
+  elementContainsAttribute,
+  findElementRecursive,
+  initializeIcons,
+  Nav,
+  NavLink,
+  Icon
+} from "office-ui-fabric-react";
 import "./styles.css";
 
 initializeIcons();
 
-const items = ["Item1", "Item2", "Item3", "Item4"];
-const addItem = props => {
-  return {
-    name: props.name,
-    disabled: !props.name,
-    key: props.key
-  };
-};
-const DragList = props => {
-  const { items } = props;
-
-  let newItems = [];
-  if (items.length > 0) {
-    let i = 0;
-    for (; i < items.length; i++) {
-      newItems.push(addItem({ name: undefined, key: i }));
-      newItems.push(addItem({ name: items[i], key: items[i] }));
-    }
-
-    newItems.push(addItem({ name: undefined, key: i }));
-  }
-  return (
-    <div>
-      <Nav
-        selectedKey="Item3"
-        selectedAriaLabel="Selected"
-        ariaLabel="Nav basic example"
-        linkAs={p => {
-          const {
-            title
-          } = p;
-          if(!title)
-          {
-            return (<div className="line"></div>);
-          }
-          return (
-            <>
-              <div className={p.className}>
-                <Icon className="DragGrip" iconName="gripperdotsvertical" />
-                {p.title}
-              </div>
-            </>
-          );
-        }}
-        styles={{
-          root: {
-            width: 258,
-            height: 550,
-            boxSizing: "border-box",
-            border: "1px solid #eee",
-            overflowY: "auto"
-          }
-        }}
-        groups={[
-          {
-            links: newItems
-          }
-        ]}
-      />
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <DragList items={items} />
-    </div>
-  );
-}
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
-
-/*
 const useNativeEvent = (eventName, callback) => {
   React.useEffect(() => {
     if (callback) {
@@ -97,22 +29,27 @@ const useDragging = () => {
 
   React.useEffect(() => {
     let ghost = undefined;
+    console.log("inside useEffect");
     if (dragElement) {
       // render ghost
       ghost = dragElement.cloneNode(true);
       ghost.style = "opacity: .5";
       document.body.appendChild(ghost);
+      console.log("ghost added");
     }
     return () => {
       if (ghost) {
         document.body.removeChild(ghost);
+        console.log("ghost removed");
       }
     };
   }, [dragElement]);
 
   const onMouseDown = ev => {
+    console.log("Inside mouse down");
+    console.log(ev.target);
     if (elementContainsAttribute(ev.target, "data-draggrip")) {
-      console.log("mousedown");
+      console.log("mousedown data-datagrip");
       setDragging(true);
       // find thing to ghost
       setDragElement(
@@ -148,4 +85,115 @@ const withDragProps = (options = {}) => {
   return { "data-draggable": true };
 };
 
+const items = ["Item1", "Item2", "Item3", "Item4"];
+const addItem = props => {
+  return {
+    name: props.name,
+    disabled: !props.name,
+    key: props.key,
+    sridhar: {
+      isAwesome: true
+    }
+  };
+};
+
+function onDragOver(ev) {
+  //console.log("on Drag Over");
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = "move";
+}
+const onDrop = ev => {
+  console.log("on Drop ");
+  ev.preventDefault();
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
+  /*
+  // Get the id of the target and add the moved element to the target's DOM
+  var data = ev.dataTransfer.getData("text/plain");
+  ev.target.appendChild(document.getElementById(data));
 */
+};
+const onDragStart = ev => {
+  console.log("on Drag start ");
+  ev.dataTransfer.setData("text", ev.target.id);
+};
+
+const DragList = props => {
+  const { onMouseDown, dragging } = useDragging();
+  const { items } = props;
+
+  let newItems = [];
+  if (items.length > 0) {
+    let i = 0;
+    for (; i < items.length; i++) {
+      newItems.push(addItem({ name: undefined, key: i }));
+      newItems.push(addItem({ name: items[i], key: items[i] }));
+    }
+
+    newItems.push(addItem({ name: undefined, key: i }));
+  }
+  return (
+    <div>
+      <Nav
+        selectedKey="Item3"
+        selectedAriaLabel="Selected"
+        ariaLabel="Nav basic example"
+        linkAs={p => {
+          console.log(p);
+          const { title } = p;
+          if (!title) {
+            return (
+              <div
+                style={{ background: dragging ? "blue" : "none" }}
+                className="line"
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+              />
+            );
+          }
+          return (
+            <>
+              <div className={p.className} {...withDragProps()}>
+                <Icon
+                  {...withDragProps({ grip: true })}
+                  draggable="true"
+                  onDragStart={onDragStart}
+                  onMouseDown={onMouseDown}
+                  className="DragGrip"
+                  iconName="gripperdotsvertical"
+                />
+                {p.title}
+              </div>
+            </>
+          );
+        }}
+        styles={{
+          root: {
+            width: 258,
+            height: 350,
+            boxSizing: "border-box",
+            border: "1px solid #eee",
+            overflowY: "auto"
+          }
+        }}
+        groups={[
+          {
+            links: newItems
+          }
+        ]}
+      />
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <div className="App">
+      <DragList items={items} />
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
