@@ -47,7 +47,6 @@ const useDragging = () => {
 
   const onMouseDown = ev => {
     console.log("Inside mouse down");
-    console.log(ev.target);
     if (elementContainsAttribute(ev.target, "data-draggrip")) {
       console.log("mousedown data-datagrip");
       setDragging(true);
@@ -71,8 +70,34 @@ const useDragging = () => {
       })
   );
 
+  function onDragOver(ev) {
+    //console.log("on Drag Over");
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = "move";
+  }
+  const onDrop = ev => {
+    console.log("on Drop ");
+    ev.preventDefault();
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+    /*
+    // Get the id of the target and add the moved element to the target's DOM
+    var data = ev.dataTransfer.getData("text/plain");
+    ev.target.appendChild(document.getElementById(data));
+  */
+  };
+  const onDragStart = ev => {
+    console.log("on Drag start ");
+    ev.dataTransfer.setData("text", ev.target.id);
+  };
+
+  
   return {
     onMouseDown,
+    onDragOver,
+    onDragStart,
+    onDrop,
     dragging
   };
 };
@@ -97,30 +122,16 @@ const addItem = props => {
   };
 };
 
-function onDragOver(ev) {
-  //console.log("on Drag Over");
-  ev.preventDefault();
-  ev.dataTransfer.dropEffect = "move";
-}
-const onDrop = ev => {
-  console.log("on Drop ");
-  ev.preventDefault();
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("text");
-  ev.target.appendChild(document.getElementById(data));
-  /*
-  // Get the id of the target and add the moved element to the target's DOM
-  var data = ev.dataTransfer.getData("text/plain");
-  ev.target.appendChild(document.getElementById(data));
-*/
-};
-const onDragStart = ev => {
-  console.log("on Drag start ");
-  ev.dataTransfer.setData("text", ev.target.id);
-};
+
 
 const DragList = props => {
-  const { onMouseDown, dragging } = useDragging();
+  const {
+    onMouseDown,
+    onDragOver,
+    onDragStart,
+    onDrop,
+    dragging
+  } = useDragging();
   const { items } = props;
 
   let newItems = [];
@@ -140,7 +151,7 @@ const DragList = props => {
         selectedAriaLabel="Selected"
         ariaLabel="Nav basic example"
         linkAs={p => {
-          console.log(p);
+          //console.log(p);
           const { title } = p;
           if (!title) {
             return (
