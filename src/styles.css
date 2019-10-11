@@ -15,7 +15,7 @@ ul {
 }
 
 .DragGrip {
-  position: absolute;
+  /*position: absolute; */
   left: 0;
   display: inline-flex;
   justify-content: center;

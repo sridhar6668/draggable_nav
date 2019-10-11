@@ -6,7 +6,8 @@ import {
   Icon,
   ActionButton
 } from "office-ui-fabric-react";
-import { useDragging }  from './DragEvents'; 
+//import { useDragging }  from './DragEvents';
+import { DragDropItems } from "./ItemCreator";
 import "./styles.css";
 
 initializeIcons();
@@ -19,27 +20,23 @@ const withDragProps = (options = {}) => {
   return { "data-draggable": true };
 };
 
-const addItem = props => {
-  return {
-    name: props.name,
-    disabled: !props.name,
-    key: props.key,
-    asdf: {
-      isEnabled: true
-    }
-  };
-};
-
 const DragList = props => {
-  const {
-    onMouseDown,
-    onDragStart,
-    onDragEnd,
-    onDragOver,
-    onDrop,
-    dragging
-  } = useDragging();
+  const { items, dragging, createDroppableItem, updatePinOrder } = DragDropItems();
 
+  let draggableItems = [];
+
+  for (let i = 0; i < items.length; i++) {
+    console.log("item id: " + items[i].id + ",  item pinOrder: ", items[i].pinOrder);
+    draggableItems.push(items[i]);
+    draggableItems.push(
+      createDroppableItem({
+        topPinOrder: items[i].pinOrder,
+        bottomPinOrder: (items[i + 1] && items[i + 1].pinOrder) || 0,
+        updatePinOrder: updatePinOrder
+      })
+    );
+  }
+  
   const renderLink = p => {
     const { title, name } = p;
     if (!title && !name) {
@@ -47,8 +44,8 @@ const DragList = props => {
         <div
           style={{ background: dragging ? "blue" : "none" }}
           className="line"
-          onDrop={onDrop}
-          onDragOver={onDragOver}
+          onDrop={p.onDrop}
+          onDragOver={p.onDragOver}
         />
       );
     }
@@ -58,9 +55,9 @@ const DragList = props => {
           <Icon
             {...withDragProps({ grip: true })}
             draggable="true"
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onMouseDown={onMouseDown}
+            onDragStart={p.onDragStart}
+            onDragEnd={p.onDragEnd}
+            //onMouseDown={onMouseDown}
             className="DragGrip"
             iconName="gripperdotsvertical"
           />
@@ -69,15 +66,6 @@ const DragList = props => {
       </>
     );
   };
-
-  let newItems = [];
-  let i = 1;
-  for (; i < 5; i++) {
-    newItems.push(addItem({ name: undefined, key: i }));
-    newItems.push(addItem({ name: "Item" + i, key: "Item" + i }));
-  }
-
-  newItems.push(addItem({ name: undefined, key: i }));
   return (
     <div>
       <Nav
@@ -86,10 +74,10 @@ const DragList = props => {
         ariaLabel="Nav basic example"
         onRenderLink={renderLink}
         linkAs={p => {
-          if(p.title){
+          if (p.title) {
             return <ActionButton {...p} />;
           }
-          return (<>{p.children}</>);
+          return <>{p.children}</>;
         }}
         styles={{
           root: {
@@ -102,7 +90,7 @@ const DragList = props => {
         }}
         groups={[
           {
-            links: newItems
+            links: draggableItems
           }
         ]}
       />

@@ -90,18 +90,21 @@ export const useDragging = () => {
       ev.preventDefault();
     }
   };
-  const onDrop = ev => {
+  const onDrop = (ev, updatePinOrder) => {
     console.log("drop");
     if (dragging) {
-      ev.target.appendChild(dragElement);
+      let itemInfo = ev.dataTransfer.getData("text");
+      console("Drop info" + itemInfo);
+      updatePinOrder(itemInfo);
+      //ev.target.appendChild(dragElement);
       setDragging(false);
-      setDragElement(undefined);
+      //setDragElement(undefined);
       ev.preventDefault();
     }
   };
-  const onDragStart = ev => {
+  const onDragStart = (ev,itemInfo) => {
     console.log("on Drag start ");
-    ev.dataTransfer.setData("text", ev.target.id);
+    ev.dataTransfer.setData("text", itemInfo);
   };
 
   return {
