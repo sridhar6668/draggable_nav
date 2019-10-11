@@ -5,7 +5,8 @@ import {
   findElementRecursive,
   initializeIcons,
   Nav,
-  Icon
+  Icon,
+  ActionButton
 } from "office-ui-fabric-react";
 import "./styles.css";
 
@@ -147,6 +148,38 @@ const DragList = props => {
     dragging
   } = useDragging();
 
+  const renderLink = p => {
+    console.log(p);
+    const { title, name } = p;
+    if (!title && !name) {
+      console.log("drawing empty items");
+      return (
+        <div
+          style={{ background: dragging ? "blue" : "none" }}
+          className="line"
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+        />
+      );
+    }
+    return (
+      <>
+        <div className={p.className} {...withDragProps()}>
+          <Icon
+            {...withDragProps({ grip: true })}
+            draggable="true"
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onMouseDown={onMouseDown}
+            className="DragGrip"
+            iconName="gripperdotsvertical"
+          />
+          {p.title || p.name}
+        </div>
+      </>
+    );
+  };
+
   let newItems = [];
   let i = 1;
   for (; i < 5; i++) {
@@ -161,35 +194,13 @@ const DragList = props => {
         selectedKey="Item3"
         selectedAriaLabel="Selected"
         ariaLabel="Nav basic example"
+        onRenderLink={renderLink}
         linkAs={p => {
-          //console.log(p);
-          const { title } = p;
-          if (!title) {
-            return (
-              <div
-                style={{ background: dragging ? "blue" : "none" }}
-                className="line"
-                onDrop={onDrop}
-                onDragOver={onDragOver}
-              />
-            );
+          console.log(p)
+          if(p.title){
+            return <ActionButton {...p} />;
           }
-          return (
-            <>
-              <div className={p.className} {...withDragProps()}>
-                <Icon
-                  {...withDragProps({ grip: true })}
-                  draggable="true"
-                  onDragStart={onDragStart}
-                  onDragEnd={onDragEnd}
-                  onMouseDown={onMouseDown}
-                  className="DragGrip"
-                  iconName="gripperdotsvertical"
-                />
-                {p.title}
-              </div>
-            </>
-          );
+          return (<>{p.children}</>);
         }}
         styles={{
           root: {
