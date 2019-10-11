@@ -21,22 +21,7 @@ const withDragProps = (options = {}) => {
 };
 
 const DragList = props => {
-  const { items, dragging, createDroppableItem, updatePinOrder } = DragDropItems();
-
-  let draggableItems = [];
-
-  for (let i = 0; i < items.length; i++) {
-    console.log("item id: " + items[i].id + ",  item pinOrder: ", items[i].pinOrder);
-    draggableItems.push(items[i]);
-    draggableItems.push(
-      createDroppableItem({
-        topPinOrder: items[i].pinOrder,
-        bottomPinOrder: (items[i + 1] && items[i + 1].pinOrder) || 0,
-        updatePinOrder: updatePinOrder
-      })
-    );
-  }
-  
+  const { items, dragging } = DragDropItems();
   const renderLink = p => {
     const { title, name } = p;
     if (!title && !name) {
@@ -90,7 +75,7 @@ const DragList = props => {
         }}
         groups={[
           {
-            links: draggableItems
+            links: items
           }
         ]}
       />

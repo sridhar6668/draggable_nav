@@ -64,7 +64,6 @@ export const DragDropItems = () => {
   const updatePinOrder = (id, newPinOrder) => {
     let newItems = items.map(item => {
       if (item.id == id) {
-
         return {
           ...item,
           pinOrder: newPinOrder
@@ -76,10 +75,21 @@ export const DragDropItems = () => {
     setItems(sortItems(Array.from(newItems)));
   };
 
+  let draggableItems = [];
+
+  for (let i = 0; i < items.length; i++) {
+    console.log("item id: " + items[i].id + ",  item pinOrder: ", items[i].pinOrder);
+    draggableItems.push(items[i]);
+    draggableItems.push(
+      createDroppableItem({
+        topPinOrder: items[i].pinOrder,
+        bottomPinOrder: (items[i + 1] && items[i + 1].pinOrder) || 0,
+        updatePinOrder: updatePinOrder
+      })
+    );
+  }
   return {
-    items: items,
-    dragging: dragging,
-    createDroppableItem: createDroppableItem,
-    updatePinOrder: updatePinOrder
+    items: draggableItems,
+    dragging: dragging
   };
 };
