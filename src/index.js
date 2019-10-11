@@ -1,17 +1,85 @@
-import React, { Children } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import {
-  elementContainsAttribute,
-  findElementRecursive,
-  initializeIcons,
-  Nav,
-  NavLink,
-  Icon
-} from "office-ui-fabric-react";
+import { initializeIcons, Nav, Icon } from "office-ui-fabric-react";
 import "./styles.css";
 
 initializeIcons();
 
+const items = ["Item1", "Item2", "Item3", "Item4"];
+const addItem = props => {
+  return {
+    name: props.name,
+    disabled: !props.name,
+    key: props.key
+  };
+};
+const DragList = props => {
+  const { items } = props;
+
+  let newItems = [];
+  if (items.length > 0) {
+    let i = 0;
+    for (; i < items.length; i++) {
+      newItems.push(addItem({ name: undefined, key: i }));
+      newItems.push(addItem({ name: items[i], key: items[i] }));
+    }
+
+    newItems.push(addItem({ name: undefined, key: i }));
+  }
+  return (
+    <div>
+      <Nav
+        selectedKey="Item3"
+        selectedAriaLabel="Selected"
+        ariaLabel="Nav basic example"
+        linkAs={p => {
+          const {
+            title
+          } = p;
+          if(!title)
+          {
+            return (<div className="line"></div>);
+          }
+          return (
+            <>
+              <div className={p.className}>
+                <Icon className="DragGrip" iconName="gripperdotsvertical" />
+                {p.title}
+              </div>
+            </>
+          );
+        }}
+        styles={{
+          root: {
+            width: 258,
+            height: 550,
+            boxSizing: "border-box",
+            border: "1px solid #eee",
+            overflowY: "auto"
+          }
+        }}
+        groups={[
+          {
+            links: newItems
+          }
+        ]}
+      />
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <div className="App">
+      <DragList items={items} />
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+/*
 const useNativeEvent = (eventName, callback) => {
   React.useEffect(() => {
     if (callback) {
@@ -80,89 +148,4 @@ const withDragProps = (options = {}) => {
   return { "data-draggable": true };
 };
 
-const items = ["Item 1", "Item 2", "Item 3", "Item 4"];
-const DragList = props => {
-  const { onMouseDown, dragging } = useDragging();
-
-  return (
-    <div
-      style={{ background: dragging ? "blue" : "none" }}
-      onMouseDown={onMouseDown}
-    >
-      <Nav
-        selectedKey="key3"
-        selectedAriaLabel="Selected"
-        ariaLabel="Nav basic example"
-        onRenderLink={p => (
-          <div className={p.className}>
-            <Icon
-              {...withDragProps({ grip: true })}
-              className="DragGrip"
-              iconName="gripperdotsvertical"
-            />
-            {p.name}
-          </div>
-        )}
-        styles={{
-          root: {
-            width: 208,
-            height: 350,
-            boxSizing: "border-box",
-            border: "1px solid #eee",
-            overflowY: "auto"
-          }
-        }}
-        groups={[
-          {
-            links: [
-              {
-                ...withDragProps(),
-                name: "Documents",
-                url: "http://example.com",
-                key: "key3",
-                isExpanded: true,
-                target: "_blank"
-              },
-              {
-                name: "Pages",
-                url: "http://msn.com",
-                key: "key4",
-                target: "_blank"
-              },
-              {
-                name: "Notebook",
-                url: "http://msn.com",
-                key: "key5",
-                disabled: true
-              },
-              {
-                name: "Communication and Media",
-                url: "http://msn.com",
-                key: "key6",
-                target: "_blank"
-              },
-              {
-                name: "News",
-                url: "http://cnn.com",
-                icon: "News",
-                key: "key7",
-                target: "_blank"
-              }
-            ]
-          }
-        ]}
-      />
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <DragList items={items} />
-    </div>
-  );
-}
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+*/

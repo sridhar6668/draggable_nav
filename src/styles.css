@@ -22,3 +22,13 @@ ul {
   width: 20px;
   cursor: move;
 }
+
+.line{
+  display: block;
+  height: 1px;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
