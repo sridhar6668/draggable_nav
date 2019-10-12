@@ -27,7 +27,7 @@ const DragList = props => {
     if (!title && !name) {
       return (
         <div
-          style={{ background: dragging ? "blue" : "none" }}
+          style={{ background: dragging ? "orange" : "none" }}
           className="line"
           onDrop={p.onDrop}
           onDragOver={p.onDragOver}
@@ -42,7 +42,7 @@ const DragList = props => {
             draggable="true"
             onDragStart={p.onDragStart}
             onDragEnd={p.onDragEnd}
-            //onMouseDown={onMouseDown}
+            onMouseDown={p.onMouseDown}
             className="DragGrip"
             iconName="gripperdotsvertical"
           />

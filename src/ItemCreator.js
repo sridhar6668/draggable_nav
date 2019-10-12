@@ -1,5 +1,4 @@
 import React from "react";
-
 const sortItems = items => {
   return items.sort((a, b) => {
     return b.pinOrder - a.pinOrder;
@@ -15,12 +14,11 @@ export const DragDropItems = () => {
       pinOrder: pinOrder,
       onDragStart: ev => {
         console.log("on Drag start ");
-        setDragging(true);
         ev.dataTransfer.setData("text", id);
         console.log("value set: " + id);
       },
-      onDragEnd: ev => {
-        console.log("on drag end");
+      onMouseDown: ev => {
+        setDragging(true);
       }
     };
   };
@@ -59,7 +57,7 @@ export const DragDropItems = () => {
   const [items, setItems] = React.useState(sortItems(Array.from(Items())));
   const [dragging, setDragging] = React.useState(false);
 
-  console.log(Items());
+  console.log(items);
 
   const updatePinOrder = (id, newPinOrder) => {
     let newItems = items.map(item => {
@@ -78,7 +76,10 @@ export const DragDropItems = () => {
   let draggableItems = [];
 
   for (let i = 0; i < items.length; i++) {
-    console.log("item id: " + items[i].id + ",  item pinOrder: ", items[i].pinOrder);
+    console.log(
+      "item id: " + items[i].id + ",  item pinOrder: ",
+      items[i].pinOrder
+    );
     draggableItems.push(items[i]);
     draggableItems.push(
       createDroppableItem({
@@ -88,6 +89,7 @@ export const DragDropItems = () => {
       })
     );
   }
+
   return {
     items: draggableItems,
     dragging: dragging
